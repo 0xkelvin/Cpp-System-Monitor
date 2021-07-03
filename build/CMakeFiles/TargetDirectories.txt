@@ -1,0 +1,3 @@
+/home/viet/VietZone/Udacity/CppND-System-Monitor/build/CMakeFiles/rebuild_cache.dir
+/home/viet/VietZone/Udacity/CppND-System-Monitor/build/CMakeFiles/monitor.dir
+/home/viet/VietZone/Udacity/CppND-System-Monitor/build/CMakeFiles/edit_cache.dir
