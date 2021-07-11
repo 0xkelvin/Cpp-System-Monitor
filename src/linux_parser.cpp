@@ -12,6 +12,40 @@ using std::string;
 using std::to_string;
 using std::vector;
 
+template <typename T>
+T findValueByKey(std::string const &keyFilter, std::string const &filename){
+  std::string line, key;
+  T value;
+
+  std::ifstream stream(LinuxParser::kProcDirectory + filename);
+  if(stream.is_open()){
+    while(std::getline(stream, line)){
+      std::istringstream linestream(line);
+      while(linestream >> key >> value){
+        if(key == keyFilter){
+          return value;
+        }
+      }
+    }
+  }
+  return value;
+};
+
+template <typename T>
+T getValueOfFile(std::string const &filename){
+  std::string line;
+  T value;
+
+  std::ifstream stream(LinuxParser::kProcDirectory + filename);
+  if(stream.is_open()){
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    linestream >> value;
+  }
+  return value;
+};
+
+
 // DONE: An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
   string line;
@@ -71,27 +105,12 @@ vector<int> LinuxParser::Pids() {
 // TODO: Read and return the system memory utilization
 float LinuxParser::MemoryUtilization() 
 { 
-  string line, key;
-  float TotalMemory, FreeMemory;
-  std::ifstream filestream(kProcDirectory + kMeminfoFilename);
-  if(filestream.is_open())
-  {
-    while (std::getline(filestream,line))
-    {
-      std::istringstream linestream(line);
-      linestream >> key;
-      if(key == "MemTotal:")
-      {
-        linestream >> TotalMemory;
-      }
-      else if (key == "MemFree:")
-      {
-        linestream >> FreeMemory;
-        break;
-      }
-    }
-  }
-  return (TotalMemory - FreeMemory)/TotalMemory; 
+  string memTotal = "MemTotal:";
+  string memFree = "MemFee:";
+
+  float Total = findValueByKey<float>(memTotal, kMeminfoFilename);
+  float Free = findValueByKey<float>(memFree, kMeminfoFilename);
+  return (Total - Free) / Total;
 }
 
 // TODO: Read and return the system uptime
@@ -229,12 +248,7 @@ int LinuxParser::RunningProcesses() {
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Command(int pid) 
 {
-    string command;
-  std::ifstream stream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
-  if (stream.is_open()) {
-    std::getline(stream, command);
-  }
-  return command;
+  return std::string(getValueOfFile<std::string>(std::to_string(pid) + kCmdlineFilename));
 }
 // TODO: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
