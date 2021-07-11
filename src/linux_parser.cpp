@@ -105,7 +105,7 @@ vector<int> LinuxParser::Pids() {
 // TODO: Read and return the system memory utilization
 float LinuxParser::MemoryUtilization() {
   string memTotal = "MemTotal:";
-  string memFree = "MemFee:";
+  string memFree = "MemFree:";
 
   float Total = findValueByKey<float>(memTotal, kMeminfoFilename);
   float Free = findValueByKey<float>(memFree, kMeminfoFilename);
@@ -243,10 +243,11 @@ string LinuxParser::Command(int pid) {
   return std::string(
       getValueOfFile<std::string>(std::to_string(pid) + kCmdlineFilename));
 }
-// TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
+
+
+
 string LinuxParser::Ram(int pid) {
-  string line, temp, VmSize;
+  string line, temp, VmData;
   long mem;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) +
                            kStatusFilename);
@@ -254,15 +255,16 @@ string LinuxParser::Ram(int pid) {
     while (std::getline(filestream, line)) {
       std::istringstream streamline(line);
       streamline >> temp;
-      if (temp == "VmSize:") {
+/*Whereas when you use VmData then it gives the exact physical memory being used as a part of Physical RAM*/
+      if (temp == "VmData:") {
         streamline >> mem;
         mem /= 1000;
-        VmSize = std::to_string(mem);
+        VmData = std::to_string(mem);
       }
     }
   }
 
-  return VmSize;
+  return VmData;
 }
 
 // TODO: Read and return the user ID associated with a process
